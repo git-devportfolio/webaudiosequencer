@@ -1,0 +1,478 @@
+﻿<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!-->
+<html class="no-js">
+<!--<![endif]-->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>webaudiosequencer.js</title>
+
+    <link rel="stylesheet" href="css/style.css">
+    <link href="rainbow-master/themes/github.css" rel="stylesheet" />
+    <link href='http://fonts.googleapis.com/css?family=Raleway:400,900' rel='stylesheet' type='text/css'>
+
+</head>
+<body>
+
+    <!--[if lt IE 8]>
+        <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+    <![endif]-->
+
+    <div class="wrapper center">
+
+        <h1 class="site-title">WebAudioSequencer.js</h1>
+
+        <section class="post">
+            <p class="post-content post-logo">
+                webaudiosequencer.js est une librairie javascript légère de 27ko (10ko mimifiée), autonome et facile d'utilisation
+                pour séquencer des samples audio wav et mp3. Cette librairie est compatible avec tous les navigateurs
+                actuels supportant l'<a href="http://www.w3.org/TR/webaudio/"> API WebAudio</a> et implémentant la méthode
+                <a href="https://developer.mozilla.org/fr/docs/Web/API/AudioContext.createScriptProcessor">createScriptProcessor</a> 
+                sur laquelle repose cette librairie. Les navigateurs Firefox, Chrome, Safari, Opéra et leur version mobile sont 
+                supportées.
+            </p>
+        </section>
+
+        <a href="js/webaudiosequencer.js" class="download-button large green">Download webaudiosequencer.js v0.1</a>
+
+        <section class="post-demo">
+            <h2 class="h3-like post-title medium">Installation</h2>
+            <pre><code data-language="javascript"><script src="js/webaudiosequencer.js"></script></code></pre>
+        </section>
+
+        <!--
+            DEMO 1
+        -->
+
+        <section class="post-demo post-demo1">
+            <h2 class="h3-like post-title medium">Démo n° 1</h2>
+            <p class="post-demo-content">Séquencer le sample "basse.mp3" sur le 1er temps d'une mesure séquencée à 160 Bpm.<img src="img/ajax-loader.gif" /><a href="#" class="post-demo-button" id="demo1">Tester</a></p>
+            <pre><code data-language="javascript">/* Initialise le driver Audio */                         
+				webaudiosequencer.init();
+				
+                /* Jouer les données audio dès que celles-ci sont chargées */
+                webaudiosequencer.onReady( webaudiosequencer.start );
+
+				/* Charge le fichier basse.mp3 sur le temps 0 de la mesure, le volume est valorisé à 80% */
+				var audioEvent = new webaudiosequencer.AudioEvent( 0, "sound/basse.mp3", 80 );
+				
+				/* Valoriser le nombre de beats par minutes */
+				webaudiosequencer.setBPM( 160 );
+				
+				/* Ajouter l'évènement audio au moteur Audio */
+				webaudiosequencer.addEventGenerator( audioEvent );			
+				</code></pre>
+        </section>
+
+
+        <!--
+            DEMO 2
+        -->
+
+        <section class="post-demo post-demo2">
+            <h2 class="h3-like post-title medium">Démo n° 2</h2>
+            <p class="post-demo-content">Jouer une phrase rythmique sur une mesure séquencée à 180 Bpm.<img src="img/ajax-loader.gif" /><a href="#" class="post-demo-button" id="demo2">Tester</a></p>
+            <pre><code data-language="javascript">/* Initialise le driver Audio */
+				webaudiosequencer.init();
+                
+                /* Jouer les données audio dès que celles-ci sont chargées */
+                webaudiosequencer.onReady( webaudiosequencer.start );
+
+                /* Créer un objet composite AudioSequence ( 1 séquence = 1 mesure ) */
+				var audioSequence = webaudiosequencer.AudioSequence();				
+				
+				/* position 0 sur un grille de 16 beats (= 0/16) */
+                audioSequence.add( new webaudiosequencer.AudioEvent( 0, "sound/basse.mp3", 80 ) );		 
+				/* position 4 sur un grille de 16 beats (= 4/16) */
+                audioSequence.add( new webaudiosequencer.AudioEvent( 0.25, "sound/tonique.mp3", 80 ) );	 
+				/* position 6 sur un grille de 16 beats (= 6/16) */
+                audioSequence.add( new webaudiosequencer.AudioEvent( 0.375, "sound/tonique.mp3", 80 ) ); 
+				/* position 12 sur un grille de 16 beats (= 12/16) */
+                audioSequence.add( new webaudiosequencer.AudioEvent( 0.75, "sound/claque.mp3", 80 ) );	 
+								
+				/* Valoriser le nombre de beats par minutes */
+				webaudiosequencer.setBPM( 180 );
+				
+				/* Ajouter la séquence au moteur Audio */
+				webaudiosequencer.addEventGenerator( audioSequence );			
+				</code></pre>
+        </section>
+
+
+        <!--
+            DEMO 3
+        -->
+
+        <section class="post-demo post-demo3">
+            <h2 class="h3-like post-title medium">Démo n° 3</h2>
+            <p class="post-demo-content">Jouer deux phrases rythmiques en même temps à 160 Bpm et 220 Bpm.<img src="img/ajax-loader.gif" /><a href="#" class="post-demo-button" id="demo3">Tester</a></p>
+            <pre><code data-language="javascript">/* Initialise le driver Audio */
+				webaudiosequencer.init();
+				
+                /* Jouer les données audio dès que celles-ci sont chargées */
+                webaudiosequencer.onReady( webaudiosequencer.start );
+
+                /* Séquence 1 */
+                var audioSequence1 = new webaudiosequencer.AudioSequence();
+
+                audioSequence1.add( new webaudiosequencer.AudioEvent( 0, "sound/basse.mp3", 70 ) );
+                audioSequence1.add( new webaudiosequencer.AudioEvent( 0.25, "sound/tonique.mp3", 70 ) );
+                audioSequence1.add( new webaudiosequencer.AudioEvent( 0.375, "sound/tonique.mp3", 70 ) );
+                audioSequence1.add( new webaudiosequencer.AudioEvent( 0.75, "sound/claque.mp3", 70 ) );
+
+                /* Séquence 2 */
+                var audioSequence2 = new webaudiosequencer.AudioSequence();
+
+                audioSequence2.add( new webaudiosequencer.AudioEvent( 0, "sound/slap.mp3", 40 ) );
+                audioSequence2.add( new webaudiosequencer.AudioEvent( 0.415, "sound/slap.mp3", 40 ) );
+                audioSequence2.add( new webaudiosequencer.AudioEvent( 0.5, "sound/slap.mp3", 40 ) );
+                audioSequence2.add( new webaudiosequencer.AudioEvent( 0.75, "sound/ton.mp3", 50 ) );
+                audioSequence2.add( new webaudiosequencer.AudioEvent( 0.90, "sound/ton.mp3", 50 ) );
+
+                /* Après 10 secondes modifier le bpm */
+                setTimeout( function () { webaudiosequencer.setBPM( 220 ); }, 10000 );
+
+                /* Sinon par défault on commence à 160 BPM */
+                webaudiosequencer.setBPM( 160 );
+
+                webaudiosequencer.addEventGenerator( audioSequence1 );
+                webaudiosequencer.addEventGenerator( audioSequence2 );	
+				</code></pre>
+        </section>
+
+
+        <!--
+            DEMO 4
+        -->
+
+        <section class="post-demo post-demo4">
+            <h2 class="h3-like post-title medium">Démo n° 4</h2>
+            <p class="post-demo-content">Utiliser l'objet <u>Sequencer</u> pour jouer 2 mesures l'une après l'autre.<img src="img/ajax-loader.gif" /><a href="#" class="post-demo-button" id="demo4">Tester</a></p>
+            <pre><code data-language="javascript">/* Initialise le driver Audio */
+				webaudiosequencer.init();
+				
+                /* Jouer les données audio dès que celles-ci sont chargées */
+                webaudiosequencer.onReady( webaudiosequencer.start );
+
+				/* Séquencer 1 */
+                var audioSequence1 = new webaudiosequencer.AudioSequence();
+                
+                audioSequence1.add( new webaudiosequencer.AudioEvent( 0, "sound/basse.mp3", 80 ) );
+                audioSequence1.add( new webaudiosequencer.AudioEvent( 0.25, "sound/tonique.mp3", 80 ) );
+                audioSequence1.add( new webaudiosequencer.AudioEvent( 0.375, "sound/tonique.mp3", 80 ) );
+                audioSequence1.add( new webaudiosequencer.AudioEvent( 0.75, "sound/claque.mp3", 80 ) );
+                
+				/* Séquence 2 */				
+                var audioSequence2 = new webaudiosequencer.AudioSequence();
+				
+                audioSequence2.add( new webaudiosequencer.AudioEvent( 0, "sound/djabara.mp3", 50 ) );
+                audioSequence2.add( new webaudiosequencer.AudioEvent( 0.50, "sound/djabara.mp3", 50 ) );
+                
+				/* Séquencer */
+				var audioSequencer = new webaudiosequencer.AudioSequencer();
+				
+				audioSequencer.add( audioSequence1 );
+				audioSequencer.add( audioSequence2 );
+												
+				/* ajouter le séquencer au moteur Audio */
+                webaudiosequencer.addEventGenerator( audioSequencer );								
+				</code></pre>
+        </section>
+
+        <!--
+            Documentation
+        -->
+
+        <section class="post-demo">
+            <h2 class="h3-like post-title medium">Documentation</h2>
+            <p class="post-demo-content"><mark>webaudiosequencer</mark></p>
+            <p class="post post-content">
+                <mark>webaudiosequencer</mark> est l'objet principal de la librairie.
+            </p>
+            <p class="post-demo-content"><mark>webaudiosequencer.init()</mark></p>
+            <p class="post post-content">
+                La méthode static <mark>init</mark> ne prend aucun paramètre, elle est le point d'entrée de la librarie et son appel est obligatoire.
+                En interne, cette méthode crée un objet AudioContext et appelle la méthode <a href="https://developer.mozilla.org/fr/docs/Web/API/AudioContext.createScriptProcessor">createScriptProcessor</a> sur celui-ci.
+                Un évènement <a href="https://developer.mozilla.org/en-US/docs/Web/API/ScriptProcessorNode">onaudioprocess</a> est distribué en continu dans lequel un socket (=tampon ou buffer) reçoit des données audio à lire.
+                par défaut ce socket reçoit 1024 échantillons par évènements mais celui-ci est paramétrable par la méthode <a href="#setBufferSize">webaudiosequencer.setBufferSize()</a>. Attention sur IOS il est nécessaire d'appeler
+                cette méthode en réponse à un évènement utilisateur (clic d'un bouton par exemple). En effet pour des questions de sécurité Apple ne lève pas l'évènement onaudioprocess au chargement d'une page web.
+            </p>
+            <p class="post-demo-content"><mark id="AudioEvent">new webaudiosequencer.AudioEvent( time, soundurl, gain )</mark></p>
+            <p class="post post-content">
+                La classe AudioEvent représente un sample audio et peut être représenter comme une note de musique. En effet, elle porte les samples audio à séquencer et prend 3 paramètres : <br /><br />
+                <mark>time</mark> est un décimal entre 0 et 1. Il représente la position de la note dans une mesure. Le début de la mesure est 0 et la fin est 1.
+                Par exemple si time = 0 la note sera jouée sur le premier temps de la mesure telle une ronde (voir <a href="#demo1">Démo n°1</a>). Pour jouer les 4 temps de la mesure,
+                il suffit de découper la mesure en quatre avec time = 0, time = 1/4, time = 1/2 et time = 3/4. Les sons peuvent être joués très rapprochés puisque time peut
+                avoir jusqu'à 3 chiffres après la virgule. Au bout de 4 chiffres après la virgule, l'enchainement des notes est inaudible et paraissent être jouées en même temps.<br /><br />
+                <mark>soundurl</mark> permet de définir le chemin vers un fichier audio Wav ou Mp3.<mark class="alert">
+                    La librairie supporte seulement les fichiers audio
+                    <u>stéréo</u> d'une <u>fréquence de 44100Hz</u>. De plus, l'url doit faire parti du même domaine
+                </mark>.<br /><br />
+                <mark>gain</mark> est un entier entre 0 et 100 et représente le volume de l'échantillon audio. Contrairement au 2 premiers paramètres, le gain peut être lu et modifié
+                en cours d'exécution par les méthodes <mark>getGain()</mark>, <mark>setGain( value )</mark> de l'objet AudioEvent.
+            </p>
+
+            <p class="post-demo-content"><mark id="AudioSequence">new webaudiosequencer.AudioSequence()</mark></p>
+            <p class="post post-content">
+                La classe <mark>AudioSequence</mark> représente un conteneur ou une mesure en solfège dans laquelle sont ajoutées des notes de musique représentées par des objets <a href="#AudioEvent">AudioEvent</a>. La classe
+                <mark>AudioSequence</mark> implémente les méthodes suivantes : <mark>add</mark>, <mark>remove</mark>, <mark>clear</mark>, <mark>getChildren</mark> et <mark>getChildIndex</mark>. <br /><br />
+                <mark>add</mark> permet d'ajouer un objet <a href="#AudioEvent">AudioEvent</a>, <mark>remove</mark> prend en paramère l'objet <a href="#AudioEvent">AudioEvent</a> à supprimer, <mark>clear</mark> supprime
+                tous les objets <a href="#AudioEvent">AudioEvent</a>, <mark>getChildren</mark> retourne tous les objets <a href="#AudioEvent">AudioEvent</a> sous forme d'un tableau et <mark>getChildIndex</mark> retourne
+                l'objet <a href="#AudioEvent">AudioEvent</a> à la position passée en paramètre.
+            </p>
+
+            <p class="post-demo-content"><mark id="AudioSequencer">new webaudiosequencer.AudioSequencer()</mark></p>
+            <p class="post post-content">
+                La classe<mark>AudioSequencer</mark> représente un conteneur d'objet <a href="#AudioSequence">AudioSequence</a>. Cette classe a la particularié d'enchainer les objets <a href="#AudioSequence">AudioSequence</a>
+                les uns après les autres. La classe <mark>AudioSequencer</mark> implémente les méthodes suivantes : <mark>add</mark>, <mark>remove</mark>, <mark>clear</mark>, <mark>getChildren</mark> et <mark>getChildIndex</mark>
+            </p>
+            <p class="post-demo-content"><mark>webaudiosequencer.addEventGenerator( IAudioEventProcessor )</mark></p>
+            <p class="post post-content">
+                La méthode static <mark>addEventGenerator</mark> permet d'ajouter les données audio au moteur principal avant leur lecture. Elle reçoit en paramètre un objet de type IAudioEventProcessor.
+                Il existe 3 objets de ce type dans la librairie : <a href="#AudioEvent">AudioEvent</a>, <a href="#AudioSequence">AudioSequence</a></> et <a href="#AudioSequencer">AudioSequencer</a>.
+            </p>
+            <p class="post-demo-content"><mark>webaudiosequencer.removeEventGenerator( IAudioEventProcessor )</mark></p>
+            <p class="post post-content">
+                La méthode static <mark>removeEventGenerator</mark> permet de supprimer un objet de type IAudioEventProcessor pour que celui-ci ne soit plus joué par le moteur principal.
+            </p>
+            <p class="post-demo-content"><mark>webaudiosequencer.clearEventGenerator()</mark></p>
+            <p class="post post-content">
+                La méthode static <mark>clearEventGenerator</mark> permet de supprimer tous les objets de type IAudioEventProcessor pour que ceux-ci ne soient plus joués par le moteur principal.
+            </p>
+            <p class="post-demo-content"><mark>webaudiosequencer.start()</mark></p>
+            <p class="post post-content">
+                La méthode static <mark>start</mark> permet de commencer la lecture des données audio.
+            </p>
+            <p class="post-demo-content"><mark>webaudiosequencer.stop()</mark></p>
+            <p class="post post-content">
+                La méthode static <mark>stop</mark> permet de stopper la lecture des données audio.
+            </p>
+            <p class="post-demo-content"><mark>webaudiosequencer.isPlaying()</mark></p>
+            <p class="post post-content">
+                La méthode static <mark>isPlaying</mark> return true si les données audio sont en cours de lecture.
+            </p>
+            <p class="post-demo-content"><mark>webaudiosequencer.listen( callback )</mark></p>
+            <p class="post post-content">
+                La méthode static <mark>listen</mark> appelle la fonction de callback passée en paramère dès q'un sample audio est joué.
+            </p>
+            <p class="post-demo-content"><mark>webaudiosequencer.setBPM( value )</mark></p>
+            <p class="post post-content">
+                La méthode static <mark>setBPM</mark> reçoit en paramètre un entier qui valorise le nombre de battements par minutes. Cette métode peut être appelée pendant la lecture des données audio.
+            </p>
+            <p class="post-demo-content"><mark>webaudiosequencer.getGainValue()</mark></p>
+            <p class="post post-content">
+                La méthode static <mark>getGainValue</mark> retourne un décimal entre 0 et 1 représenant le volume principal actuellement utilisé.
+            </p>
+            <p class="post-demo-content"><mark>webaudiosequencer.setGainValue( value )</mark></p>
+            <p class="post post-content">
+                La méthode static <mark>setGainValue</mark> permet de modifier le volume principal. Elle reçoit en paramètre un décimal entre 0 et 1 bornes comprises.
+            </p>
+            <p class="post-demo-content"><mark>webaudiosequencer.onReady( callback )</mark></p>
+            <p class="post post-content">
+                La méthode static <mark>onReady</mark> permet de s'assurer que le chargement des échantillions audio est terminé et que la lecture peut commencer. Elle reçoit en paramètre une fonction de
+                callback qui s'exécute lorsque la liste des samples audio référencés par les classes AudioEvent sont chargés et converti en tableaux d'octets. Il est préconisé d'appeller la méthode
+                <mark>start</mark> dans cette méthode : webaudiosequencer.onReady(webaudiosequencer.start).
+            </p>
+            <p class="post-demo-content"><mark id="setBufferSize">webaudiosequencer.setBufferSize( value )</mark></p>
+            <p class="post post-content">
+                La méthode static <mark>setBufferSize</mark> permet de modifer la taille du socket (= tampon ou buffer) utilisé pour traiter les données audio. Elle reçoit en paramètre un entier qui prend les
+                valeurs 256, 512, 1024, 2048, 4096, 8192, 16384. Plus la taille du socket est faible plus les risques de <a href="http://en.wikipedia.org/wiki/Latency_(audio)">latence</a> sont réduits
+                mais plus les ressources systèmes sont solicités. Une taille de buffer de 1024 échantillons fonctionnera correctement sur un ordinateur de bureau mais ne marchera pas aussi bien sur un mobile avec des
+                performances moins élevés. Par défaut la librairie initialise la taille du buffer à 1024 échantillons. Ce paramètre peut être ajusté lorsque les échantillons audio ne sont pas joués correctement.
+            </p>
+            <p class="post-demo-content"><mark>webaudiosequencer.getBufferSize()</mark></p>
+            <p class="post post-content">
+                La méthode static <mark>getBufferSize</mark> retourne la taille du socket (= tampon ou buffer) actuellement utilisée pour traiter les données audio.
+            </p>
+        </section>
+
+    </div>
+
+    <a href="https://github.com/git-devportfolio/webaudiosequencer"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/a6677b08c955af8400f44c6298f40e7d19cc5b2d/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f677261795f3664366436642e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png"></a>
+
+    <script src="rainbow-master/js/rainbow.min.js"></script>
+    <script src="rainbow-master/js/language/generic.js"></script>
+    <script src="rainbow-master/js/language/javascript.js"></script>
+    <script src="js/gator.js"></script>
+    <script src="js/webaudiosequencer.js"></script>
+
+    <script>
+
+        ( function () {
+
+            var C_PLAY = "Tester";
+            var C_STOP = "Stop";
+
+            Gator( document.querySelector( '.wrapper' ) ).on( 'click', '.post-demo-button', function ( e ) {
+
+                e.preventDefault();
+
+                webaudiosequencer.init();
+
+                var postDemoButtons = document.querySelectorAll( '.post-demo-button' );
+
+                for ( var i = 0; i < postDemoButtons.length; ++i ) {
+
+                    if ( postDemoButtons[i] !== this ) {
+
+                        postDemoButtons[i].innerHTML = C_PLAY;
+                    }
+                }
+
+                webaudiosequencer.clearEventGenerator();
+
+                switch ( this['id'] ) {
+
+                    case 'demo1':
+                        demo1( this );
+                        break;
+
+                    case 'demo2':
+                        demo2( this );
+                        break;
+
+                    case 'demo3':
+                        demo3( this );
+                        break;
+
+                    case 'demo4':
+                        demo4( this );
+                        break;
+                }
+            } );
+
+
+            var demoBase = function ( element, callback ) {
+
+                if ( element.innerHTML === C_PLAY ) {
+
+                    element.style.visibility = 'hidden';
+                    element.parentNode.querySelector( 'img' ).style.visibility = 'visible';
+
+                    webaudiosequencer.onReady( function ( e ) {
+
+                        webaudiosequencer.start();
+
+                        element.innerHTML = C_STOP;
+
+                        element.style.visibility = 'visible';
+                        element.parentNode.querySelector( 'img' ).style.visibility = 'hidden';
+
+                    } );
+
+                    callback.call();
+                }
+                else {
+
+                    element.innerHTML = C_PLAY;
+                    webaudiosequencer.stop();
+                    webaudiosequencer.clearEventGenerator();
+                }
+            };
+
+
+            var demo1 = function demo1( element ) {
+
+                demoBase( element, function () {
+
+                    webaudiosequencer.addEventGenerator( new webaudiosequencer.AudioEvent( 0, "sound/basse.mp3", 80 ) );
+
+                } );
+
+            };
+
+
+            var demo2 = function demo2( element ) {
+
+                demoBase( element, function () {
+
+                    var audioSequence = new webaudiosequencer.AudioSequence();
+
+                    audioSequence.add( new webaudiosequencer.AudioEvent( 0, "sound/basse.mp3", 80 ) );
+                    audioSequence.add( new webaudiosequencer.AudioEvent( 0.25, "sound/tonique.mp3", 80 ) );
+                    audioSequence.add( new webaudiosequencer.AudioEvent( 0.375, "sound/tonique.mp3", 80 ) );
+                    audioSequence.add( new webaudiosequencer.AudioEvent( 0.75, "sound/claque.mp3", 80 ) );
+
+                    webaudiosequencer.setBPM( 180 );
+
+                    webaudiosequencer.addEventGenerator( audioSequence );
+
+                } );
+
+            };
+
+
+            var demo3 = function demo2( element ) {
+
+                demoBase( element, function () {
+
+                    var audioSequence1 = new webaudiosequencer.AudioSequence();
+
+                    audioSequence1.add( new webaudiosequencer.AudioEvent( 0, "sound/basse.mp3", 70 ) );
+                    audioSequence1.add( new webaudiosequencer.AudioEvent( 0.25, "sound/tonique.mp3", 70 ) );
+                    audioSequence1.add( new webaudiosequencer.AudioEvent( 0.375, "sound/tonique.mp3", 70 ) );
+                    audioSequence1.add( new webaudiosequencer.AudioEvent( 0.75, "sound/claque.mp3", 70 ) );
+
+                    var audioSequence2 = new webaudiosequencer.AudioSequence();
+
+                    audioSequence2.add( new webaudiosequencer.AudioEvent( 0, "sound/slap.mp3", 40 ) );
+                    audioSequence2.add( new webaudiosequencer.AudioEvent( 0.415, "sound/slap.mp3", 40 ) );
+                    audioSequence2.add( new webaudiosequencer.AudioEvent( 0.5, "sound/slap.mp3", 40 ) );
+                    audioSequence2.add( new webaudiosequencer.AudioEvent( 0.75, "sound/ton.mp3", 50 ) );
+                    audioSequence2.add( new webaudiosequencer.AudioEvent( 0.90, "sound/ton.mp3", 50 ) );
+
+                    setTimeout( function () { webaudiosequencer.setBPM( 220 ); }, 10000 );
+
+                    webaudiosequencer.setBPM( 160 );
+
+                    webaudiosequencer.addEventGenerator( audioSequence1 );
+                    webaudiosequencer.addEventGenerator( audioSequence2 );
+
+                } );
+
+            };
+
+            var demo4 = function demo4( element ) {
+
+                demoBase( element, function () {
+
+                    /* Séquencer 1 */
+                    var audioSequence1 = new webaudiosequencer.AudioSequence();
+
+                    audioSequence1.add( new webaudiosequencer.AudioEvent( 0, "sound/basse.mp3", 80 ) );
+                    audioSequence1.add( new webaudiosequencer.AudioEvent( 0.25, "sound/tonique.mp3", 80 ) );
+                    audioSequence1.add( new webaudiosequencer.AudioEvent( 0.375, "sound/tonique.mp3", 80 ) );
+                    audioSequence1.add( new webaudiosequencer.AudioEvent( 0.75, "sound/claque.mp3", 80 ) );
+
+                    /* Séquence 2 */
+                    var audioSequence2 = new webaudiosequencer.AudioSequence();
+
+                    audioSequence2.add( new webaudiosequencer.AudioEvent( 0, "sound/djabara.mp3", 50 ) );
+                    audioSequence2.add( new webaudiosequencer.AudioEvent( 0.50, "sound/djabara.mp3", 50 ) );
+
+                    /* Séquencer */
+                    var audioSequencer = new webaudiosequencer.AudioSequencer();
+
+                    webaudiosequencer.setBPM( 160 );
+
+                    audioSequencer.add( audioSequence1 );
+                    audioSequencer.add( audioSequence2 );
+
+                    /* ajouter le séquencer au moteur Audio */
+                    webaudiosequencer.addEventGenerator( audioSequencer );
+
+                } );
+            }
+
+        }() );
+
+    </script>
+
+</body>
+</html>
